@@ -88,12 +88,17 @@ type
     petsprite_getisdependent, petsprite_isoffspringdue: pointer;
     petsprite_mate: tpetsprite_mate;
     petsprite_conceiveto: pointer;
+    petsprite_deliveroffspring: pointer;
+    petsprite_setshouldibedeleted: pointer;
+    g_case: pointer;
 
     scriptsprite_setdiaperstatus:Pointer;
 
     goalinsanity_create: pointer;
 
     sprite_hart_start:Pointer;
+    dobirthdialog: pointer;
+    case_loadpetz: pointer;
 
     petsprite_petsprite, petsprite_free: pointer;
 
@@ -107,7 +112,7 @@ type
     spriteadpt_killpetz, spriteadpt_loadpetz,
       spriteadpt_spriteadpt, spriteadpt_free: pointer;
 
-    oberon_getarea, area_gotoarea: pointer;
+    oberon_getarea, area_gotoarea, oberon_fixshouldibedeleted: pointer;
 
  {petz 3 only}
     petsprite_isfemale: pointer;
@@ -211,6 +216,8 @@ begin
 
   if cpetzver in verBreeding then begin
     rimports.sprite_hart_start:=getprocaddress(hmod,'?Start@Sprite_Hart@@QAEXABU?$XTPoint@H@@PBD11@Z');
+    rimports.dobirthdialog := getprocaddress(hmod, '?DoBirthDialog@@YAXH@Z');
+    rimports.case_loadpetz := getprocaddress(hmod, '?LoadPetz@Sprite_Case@@UAE_NH_N00@Z');
   end;
 
   case cpetzver of
@@ -341,8 +348,11 @@ begin
         rimports.ancestryinfo_create := getprocaddress(hmod, '??0AncestryInfo@@QAE@XZ');
         rimports.petsprite_mate := getprocaddress(hmod, '?Mate@PetSprite@@SA_NABV1@AAV1@@Z');
         rimports.petsprite_conceiveto := getprocaddress(hmod, '?Conceive2@PetSprite@@UAEXW4UAction@@PAVAlpoSprite@@@Z');
+        rimports.petsprite_setshouldibedeleted := getprocaddress(hmod, '?SetShouldIBeDeleted@PetSprite@@UAE_N_N@Z');
         rimports.petsprite_isoffspringdue := getprocaddress(hmod, '?IsOffspringDue@PetSprite@@QBE_NXZ');
         rimports.petsprite_getisdependent := getprocaddress(hmod, '?GetIsDependent@PetSprite@@UBE_NXZ');
+        rimports.petsprite_deliveroffspring := getprocaddress(hmod, '?DeliverOffspring@PetSprite@@QAEPAV1@XZ');
+        rimports.g_case := pointer(longword(getprocaddress(hmod, '?g_Case@@3V?$XTSmartPtr@PAVSprite_Case@@@@A')) + 12);
 
         rimports.stateconceive_stateconceive := getprocaddress(hmod, '??0StateConceive@@QAE@XZ');
         rimports.stateconceive_execute := getprocaddress(hmod, '?Execute@StateConceive@@UAEXAAVCharacterSprite@@_N1@Z');
@@ -351,6 +361,7 @@ begin
 
   if cpetzver <> pvpetz2 then begin //area functions
     rimports.oberon_getarea := getprocaddress(hmod, '?GetArea@Oberon@@QBEPAVArea@@PBD@Z');
+    rimports.oberon_fixshouldibedeleted := getprocaddress(hmod, '?FixShouldIBeDeleted@Oberon@@QAEXXZ');
     rimports.area_gotoarea := getprocaddress(hmod, '?GoToArea@Area@@UAEXXZ');
   end;
 end;
