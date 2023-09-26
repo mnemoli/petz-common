@@ -44,6 +44,7 @@ type
   TPetzallocmem = function(size: integer): pointer; cdecl;
   TXDownload_getdefaultloadinfo = function(loadinfo: pointer; loadtype: longword; s: pchar; xlibrarylist: pointer): bool; cdecl;
   TXDownload_getfilmstrip = function(p: pchar; xlibrarylist: pointer): pointer; cdecl;
+  TGetBreedLoadInfo = function(id: ushort): pointer; cdecl;
   PPointer = ^pointer;
 
   trimports = record
@@ -90,6 +91,7 @@ type
     petsprite_conceiveto: pointer;
     petsprite_deliveroffspring: pointer;
     petsprite_setshouldibedeleted: pointer;
+    genome_genome: pointer;
     g_case: pointer;
 
     scriptsprite_setdiaperstatus:Pointer;
@@ -99,6 +101,7 @@ type
     sprite_hart_start:Pointer;
     dobirthdialog: pointer;
     case_loadpetz: pointer;
+    findbreedclassloadinfo: TGetBreedLoadInfo;
 
     petsprite_petsprite, petsprite_free: pointer;
 
@@ -218,6 +221,7 @@ begin
     rimports.sprite_hart_start:=getprocaddress(hmod,'?Start@Sprite_Hart@@QAEXABU?$XTPoint@H@@PBD11@Z');
     rimports.dobirthdialog := getprocaddress(hmod, '?DoBirthDialog@@YAXH@Z');
     rimports.case_loadpetz := getprocaddress(hmod, '?LoadPetz@Sprite_Case@@UAE_NH_N00@Z');
+    rimports.findbreedclassloadinfo := getprocaddress(hmod, '?GetBreedClassLoadInfo@DownloadInfo@@SAABVLoadInfo@@F@Z');
   end;
 
   case cpetzver of
@@ -349,6 +353,7 @@ begin
         rimports.petsprite_mate := getprocaddress(hmod, '?Mate@PetSprite@@SA_NABV1@AAV1@@Z');
         rimports.petsprite_conceiveto := getprocaddress(hmod, '?Conceive2@PetSprite@@UAEXW4UAction@@PAVAlpoSprite@@@Z');
         rimports.petsprite_setshouldibedeleted := getprocaddress(hmod, '?SetShouldIBeDeleted@PetSprite@@UAE_N_N@Z');
+        rimports.genome_genome := getprocaddress(hmod, '??0Genome@@QAE@ABV?$pfvector@PAVChromosome@@PBD@@0@Z');
         rimports.petsprite_isoffspringdue := getprocaddress(hmod, '?IsOffspringDue@PetSprite@@QBE_NXZ');
         rimports.petsprite_getisdependent := getprocaddress(hmod, '?GetIsDependent@PetSprite@@UBE_NXZ');
         rimports.petsprite_deliveroffspring := getprocaddress(hmod, '?DeliverOffspring@PetSprite@@QAEPAV1@XZ');
