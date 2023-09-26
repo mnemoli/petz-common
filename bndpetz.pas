@@ -110,7 +110,7 @@ type
     get_dlgglobals:tpetzgetdlgglobals;
 
     ancestryinfo_create: pointer;
-    ancestryinfo_setadopter, ancestryinfo_setname, ancestryinfo_setbreed: pointer;
+    ancestryinfo_setadopter, ancestryinfo_setname, ancestryinfo_setbreed, textinfo_adopttext: pointer;
 
     spriteadpt_killpetz, spriteadpt_loadpetz,
       spriteadpt_spriteadpt, spriteadpt_free: pointer;
@@ -350,6 +350,7 @@ begin
         rimports.ancestryinfo_setname := getprocaddress(hmod, '?SetName@AncestryInfo@@QAEXPBD@Z');
         rimports.ancestryinfo_setbreed := getprocaddress(hmod, '?SetBreed@AncestryInfo@@QAEXPBD@Z');
         rimports.ancestryinfo_create := getprocaddress(hmod, '??0AncestryInfo@@QAE@XZ');
+        rimports.textinfo_adopttext := getprocaddress(hmod, '?AdoptText@TextInfo@@QAEXPBDH@Z');
         rimports.petsprite_mate := getprocaddress(hmod, '?Mate@PetSprite@@SA_NABV1@AAV1@@Z');
         rimports.petsprite_conceiveto := getprocaddress(hmod, '?Conceive2@PetSprite@@UAEXW4UAction@@PAVAlpoSprite@@@Z');
         rimports.petsprite_setshouldibedeleted := getprocaddress(hmod, '?SetShouldIBeDeleted@PetSprite@@UAE_N_N@Z');
