@@ -18,6 +18,7 @@ const
   verAdoptcenter: set of tpetzvername = [pvpetz3, pvpetz3german, pvpetz4, pvpetz5];
   verUnibreed: set of TPetzvername = [pvpetz3, pvpetz3german, pvpetz4, pvpetz5];
   verCamera: set of TPetzvername = [pvpetz4, pvpetz5, pvpetz3, pvpetz3german,pvBabyz];
+  verNametags: set of TPetzvername = [pvpetz3, pvpetz4, pvpetz5];
 
   petzhashes: array[0..7] of tpetzhashrec = (
     (ver: pvpetz5; hash: '0A5AE8C8965C5F8DBB1F22B4EE6F252F'), {orig}
@@ -93,6 +94,7 @@ type
     petsprite_setshouldibedeleted: pointer;
     genome_genome: pointer;
     g_case: pointer;
+    g_stage: ppointer;
 
     scriptsprite_setdiaperstatus:Pointer;
 
@@ -116,6 +118,11 @@ type
       spriteadpt_spriteadpt, spriteadpt_free: pointer;
 
     oberon_getarea, area_gotoarea, oberon_fixshouldibedeleted: pointer;
+
+    dllnew: pointer;
+    cshlglobals_loadandchecklibrary: pointer;
+    alposprite_setadjvalue: pointer;
+    toysprite_inittoy: pointer;
 
  {petz 3 only}
     petsprite_isfemale: pointer;
@@ -251,6 +258,16 @@ begin
   if cpetzver<>pvpetz2 then //Petz2 doesn't support this method
   rimports.xstage_redostage:=getprocaddress(hmod,'?RedoStage@XStage@@QAEXXZ');
 
+  rimports.petzapp_dodrawframe := getprocaddress(hmod, '?DoDrawFrame@PetzApp@@QAEXXZ');
+        rimports.petzapp_preparedrawframe := getprocaddress(hmod, '?PrepareDrawFrame@PetzApp@@QAEX_N@Z');
+        rimports.xdrawport_openscreendrawport := getprocaddress(hmod, '?OpenScreenDrawPort@XDrawPort@@SA_NXZ');
+        rimports.xdrawport_closescreendrawport := getprocaddress(hmod, '?CloseScreenDrawPort@XDrawPort@@SA_NXZ');
+         rimports.xdrawport_xfillrect := getprocaddress(hmod, '?XFillRect@XDrawPort@@UAEXABU?$XTRect@HJ@@H@Z');
+        rimports.xdrawport_xdrawtext := getprocaddress(hmod, '?XDrawText@XDrawPort@@QAEXPADPAU?$XTRect@HJ@@HHJHH@Z');
+        rimports.petmodule_dodrawframe := getprocaddress(hmod, '?DoDrawFrame@PetModule@@QAEXXZ');
+        rimports.alposprite_getgrabrect := getprocaddress(hmod, '?GetGrabRect@AlpoSprite@@UBEABU?$XTRect@HJ@@XZ');
+        rimports.xstage_setdirty := getprocaddress(hmod, '?SetDirty@XStage@@QAEABU?$XTRect@HJ@@ABU2@_N@Z');
+
   case cpetzver of
     pvpetz5: begin
         rimports.getshlglobals := getprocaddress(hmod, '?Get_ShlGlobals@@YAPAVCShlGlobals@@XZ');
@@ -357,11 +374,21 @@ begin
         rimports.genome_genome := getprocaddress(hmod, '??0Genome@@QAE@ABV?$pfvector@PAVChromosome@@PBD@@0@Z');
         rimports.petsprite_isoffspringdue := getprocaddress(hmod, '?IsOffspringDue@PetSprite@@QBE_NXZ');
         rimports.petsprite_getisdependent := getprocaddress(hmod, '?GetIsDependent@PetSprite@@UBE_NXZ');
-        rimports.petsprite_deliveroffspring := getprocaddress(hmod, '?DeliverOffspring@PetSprite@@QAEPAV1@XZ');
-        rimports.g_case := pointer(longword(getprocaddress(hmod, '?g_Case@@3V?$XTSmartPtr@PAVSprite_Case@@@@A')) + 12);
-
+        if cpetzver <> pvpetz5 then
+          // p5 doesn't have this since there are multiple offspring
+          rimports.petsprite_deliveroffspring := getprocaddress(hmod, '?DeliverOffspring@PetSprite@@QAEPAV1@XZ');
+        if cpetzver <> pvpetz5 then begin
+          // changes to a function in p5... only used for batch breeding
+          rimports.g_case := pointer(longword(getprocaddress(hmod, '?g_Case@@3V?$XTSmartPtr@PAVSprite_Case@@@@A')) + 12);
+        end;
+        if cpetzver = pvpetz4 then
+          rimports.g_stage := ppointer(getprocaddress(hmod, '?g_Stage@@3PAVXStage@@A'));
         rimports.stateconceive_stateconceive := getprocaddress(hmod, '??0StateConceive@@QAE@XZ');
         rimports.stateconceive_execute := getprocaddress(hmod, '?Execute@StateConceive@@UAEXAAVCharacterSprite@@_N1@Z');
+        rimports.dllnew := getprocaddress(hmod, '?DLLNew@XDownload@@SAPAV1@W4ELoadType@@PBDH@Z');
+        rimports.cshlglobals_loadandchecklibrary := getprocaddress(hmod, '?LoadAndCheckLibrary@CShlGlobals@@QAEPAUHINSTANCE__@@PBD_NJJ@Z');
+        rimports.alposprite_setadjvalue := getprocaddress(hmod, '?SetAdjValue@AlpoSprite@@UAEHW4EAdj@@H@Z');
+        rimports.toysprite_inittoy := getprocaddress(hmod, '?InitToy@ToySprite@@UAEX_NPAVHost@@@Z');
       end;
   end;
 
