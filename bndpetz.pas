@@ -123,6 +123,8 @@ type
     cshlglobals_loadandchecklibrary: pointer;
     alposprite_setadjvalue: pointer;
     toysprite_inittoy: pointer;
+    xlib_getinstancelist: pointer;
+    xballz_draweyeball: pointer;
 
  {petz 3 only}
     petsprite_isfemale: pointer;
@@ -389,6 +391,8 @@ begin
         rimports.cshlglobals_loadandchecklibrary := getprocaddress(hmod, '?LoadAndCheckLibrary@CShlGlobals@@QAEPAUHINSTANCE__@@PBD_NJJ@Z');
         rimports.alposprite_setadjvalue := getprocaddress(hmod, '?SetAdjValue@AlpoSprite@@UAEHW4EAdj@@H@Z');
         rimports.toysprite_inittoy := getprocaddress(hmod, '?InitToy@ToySprite@@UAEX_NPAVHost@@@Z');
+        rimports.xlib_getinstancelist := getprocaddress(hmod, '?GetInstanceList@XLibraryListSmall@@UBEPBQAUHINSTANCE__@@XZ');
+        rimports.xballz_draweyeball := getprocaddress(hmod, '?DrawEyeball@XBallz@@QAEXPAVXDrawPort@@PBVBallFrameEx@@PBVBallState@@HABVCircleRenderBlock@@HABU?$XTPoint@H@@@Z');
       end;
   end;
 
