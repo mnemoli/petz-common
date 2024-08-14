@@ -43,6 +43,7 @@ type
   TXDrawport_Openscreendrawport = function: bool; cdecl;
   TXdrawport_closescreendrawport = function: bool; cdecl;
   TPetzallocmem = function(size: integer): pointer; cdecl;
+  TPetzdeletemem = procedure(mem: pointer); cdecl;
   TXDownload_getdefaultloadinfo = function(loadinfo: pointer; loadtype: longword; s: pchar; xlibrarylist: pointer): bool; cdecl;
   TXDownload_getfilmstrip = function(p: pchar; xlibrarylist: pointer): pointer; cdecl;
   TGetBreedLoadInfo = function(id: ushort): pointer; cdecl;
@@ -108,6 +109,7 @@ type
     petsprite_petsprite, petsprite_free: pointer;
 
     petzallocmem: tpetzallocmem;
+    petzdeletemem: tpetzdeletemem;
 
     get_dlgglobals:tpetzgetdlgglobals;
 
@@ -156,6 +158,7 @@ type
 
  {babyz only}
     petzapp_checkforbabyzcd: pointer;
+    babysprite_reacttovoiceinterpretation: pointer;
   end;
 
 // procedure petsprite_isfemale; external 'Petz 5.exe' name '?IsFemale@PetSprite@@QBE_NXZ';
@@ -340,9 +343,14 @@ begin
       rimports.petzallocmem := getprocaddress(hmod, '?PetzNew@@YAPAXI@Z');
   end;
 
+    case cpetzver of
+    pvpetz4: rimports.petzdeletemem := ptr($0045ba00);
+  end;
+
   if cpetzver = pvbabyz then begin
     rimports.petzapp_checkforbabyzcd := getprocaddress(hmod, '?CheckForBabyzCD@PetzApp@@QAE_NXZ');
     rimports.scriptsprite_setdiaperstatus := getprocaddress(hmod, '?SetDiaperStatus@ScriptSprite@@UAEXW4EDiaperStatus@@@Z');    
+    rimports.babysprite_reacttovoiceinterpretation := getprocaddress(hmod, '?ReactToVoiceInterpretation@BabySprite@@UAEXW4WordConceptIndex@@@Z');
   end;
 
   case cpetzver of
@@ -392,8 +400,7 @@ begin
         rimports.alposprite_setadjvalue := getprocaddress(hmod, '?SetAdjValue@AlpoSprite@@UAEHW4EAdj@@H@Z');
         rimports.toysprite_inittoy := getprocaddress(hmod, '?InitToy@ToySprite@@UAEX_NPAVHost@@@Z');
         rimports.xlib_getinstancelist := getprocaddress(hmod, '?GetInstanceList@XLibraryListSmall@@UBEPBQAUHINSTANCE__@@XZ');
-        rimports.xballz_draweyeball := getprocaddress(hmod, '?DrawEyeball@XBallz@@QAEXPAVXDrawPort@@PBVBallFrameEx@@PBVBallState@@HABVCircleRenderBlock@@HABU?$XTPoint@H@@@Z');
-      end;
+       end;
   end;
 
   if cpetzver <> pvpetz2 then begin //area functions
@@ -401,6 +408,7 @@ begin
     rimports.oberon_fixshouldibedeleted := getprocaddress(hmod, '?FixShouldIBeDeleted@Oberon@@QAEXXZ');
     rimports.area_gotoarea := getprocaddress(hmod, '?GoToArea@Area@@UAEXXZ');
   end;
+   rimports.xballz_draweyeball := getprocaddress(hmod, '?DrawEyeball@XBallz@@QAEXPAVXDrawPort@@PBVBallFrameEx@@PBVBallState@@HABVCircleRenderBlock@@HABU?$XTPoint@H@@@Z');
 end;
 
 function petzadoptedname(ver: tpetzvername): string;
